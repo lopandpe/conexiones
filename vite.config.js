@@ -2,6 +2,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 
-  // Configuration options
+  build: {
+    root: './src',
+    outDir: '../docs',
+  }
 
 });
