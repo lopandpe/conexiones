@@ -5,14 +5,37 @@
 <head>
 
     <meta charset="UTF-8">
-
-    <title>Vite App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Conexiones (A)</title>
 
 </head>
 
 <body>
 
-    <div id="app"></div>
+    <div id="app">
+
+        <h1>Jueguito de conexiones</h1>
+        <h2>Porque no era tan difícil hacerlo bien</h2>
+        <p id="messages">Selecciona cuatro casillas, tienes <b>4</b> intentos.</p>
+        <div class="container">
+            <div id="grid">
+            </div>
+            <div id="actions">
+                <div id="submit">Enviar</div>
+                <ul id="tries">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="modal">
+        <div id="message"></div>
+    </div>
 
     <script type="module" src="/js/scripts.js"></script>
 

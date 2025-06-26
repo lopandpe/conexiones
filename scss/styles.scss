@@ -1,5 +1,191 @@
+*, *:after, *:before{
+    box-sizing: border-box;
+}
+html{
+    font-family: "Roboto", sans-serif;
+}
 body {
+  background-color: #FFFFFF;
+  text-align: center;
+  margin: 0px;
+}
+.container{
+    width: 335px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 30px auto;
+}
+#messages{
+    &.warning{
+        color: #f7630e;
+    }
+}
+#grid{
+    width: 335px;
+    height: 335px;
+    display: block;
+    position: relative;
+    .cell{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #e2e0e0;
+        color: #292929;
+        font-weight: bold;
+        font-size: 12px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        order: 5;
+        
+        $cell-size: 80px;
+        $gap: 5px;
+        @for $i from 1 through 4 {
+            &.col-#{$i} {
+                left: calc(#{$cell-size} * #{$i - 1} + #{$gap} * #{$i - 1});
+            }
+            &.row-#{$i} {
+                top: calc(#{$cell-size} * #{$i - 1} + #{$gap} * #{$i - 1});
+            }
+        }
+        &:hover{
+            background-color: #e4e2e2;
+        }
+        &:active{
+            transform: scale(1.05);
+        }
+        &.active{
+            background-color: #3d3d3d;
+            color: #e4e2e2;
+        }
+        &.checked{
+            color: #FFF;
+            &[data-group="1"]{
+                background-color: #579c1e;
+                color: #e4e2e2;
+            }
+            &[data-group="2"]{
+                background-color: #1e559c;
+                color: #e4e2e2;
+            }
+            &[data-group="3"]{
+                background-color: #c230b6;
+                color: #e4e2e2;
+            }
+            &[data-group="4"]{
+                background-color: #ecde14;
+            }
+        }
+    }
+    .solution-line{
+        position: absolute;
+        left: 0;
+        width: 335px;
+        opacity: 0;
+        height: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 16px;
+        text-transform: uppercase;
+        transition: all 0.5s ease-in-out;
+        color: #FFF;
+        ul{
+            list-style: none;
+            padding: 0px;
+            display: flex;
+            gap: 5px;
+            font-size: 0.7em;
+            margin: 0px;
+            font-weight: bold;
+        }
+    }
+}
+#submit{
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    background-color: #03ad44;
+    color: #FFF;
+    cursor: pointer;
+    &:hover{
+        background-color: #4dce7e;
+    }
+    &:active{
+        background-color: #36b466;
+    }
+}
 
-  background-color: pink;
+#modal{
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    #message{
+        background-color:#FFF;
+        max-width: 300px;
+        color: #000;
+        padding: 20px;
+        box-shadow: 0px 0px 20px -5px rgba(255, 255, 255, 0.6);
+    }
+    &.active{
+    inset: 0;
+    }
+}
 
+#tries{
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0px;
+    gap: 20px;
+    li{
+        display: block;
+        position: relative;
+        transition: opacity 0.5s ease-out 1s;
+        opacity: 1;
+        &:after, &:before{
+            display: block;
+            content: "";
+            background-color: #7e7e7e;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: all 0.5s ease-in-out;
+        }
+        &.explode{
+            opacity: 0;
+            &:before{
+                width: 30px;
+                height: 30px;
+                background-color: rgb(216, 38, 38);
+                opacity: 0;
+            }
+            &:after{
+                background-color: rgb(216, 38, 38);
+            }
+        }
+    }
 }
