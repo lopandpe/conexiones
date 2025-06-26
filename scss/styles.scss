@@ -64,6 +64,10 @@ body {
             background-color: #3d3d3d;
             color: #e4e2e2;
         }
+        &.error{
+            background-color: #c70101 !important;
+            color: #e4e2e2;
+        }
         &.checked{
             color: #FFF;
             &[data-group="1"]{

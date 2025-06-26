@@ -1,33 +1,39 @@
 import '../scss/styles.scss';
 
 
-
 const solution = {
     1: {
         ids: ["1", "2", "3", "4"],
         texts: ["Comisiones", "Solidaridad", "Unión", "Confederación"],
         color: "#579c1e", 
-        title: "Inicial de sindicato" 
+        title: "Inicial de sindicato",
+        emoji: "🟩"
     },
     2: {
         ids: ["5", "6", "7", "8"],
         texts: ["Esponja", "Coral", "Crucero", "Ola"],
         color: "#1e559c",
-        title: "En el mar"
+        title: "En el mar",
+        emoji: "🟦"
     },
     3: {
         ids: ["9", "10", "11", "12"],
         texts: ["Apatía", "Cabeza", "Entuerto", "Parasol"],
         color: "#c230b6",
-        title: "Comienzan con una preposición"
+        title: "Comienzan con una preposición",
+        emoji: "🟪"
     },
     4: {
         ids: ["13", "14", "15", "16"],
         texts: ["Crew", "Asamblea", "Colectivo", "Peña"],
         color: "#ecde14",
-        title: "Grupo de personas"
+        title: "Grupo de personas",
+        emoji: "🟨"
     }
 };
+
+let statistic = [];
+
 
 let allElements = [];
 for (const [groupKey, groupData] of Object.entries(solution)) {
@@ -92,55 +98,51 @@ cells.forEach(cell => {
 let submit = document.querySelector('#submit');
 
 submit.addEventListener("click", function(){
+    let options = [];
     if(counter == 4){
         let cells = document.querySelectorAll('.cell.active');
         let group = null;
         let groupId = 0;
         let correct = true;
-        cells.forEach(cell => {
+        cells.forEach(cell => {            
+            let id = cell.getAttribute('data-id');
+            group = findGroup(id, solution);
+            options.push({
+                id: id,
+                text: cell.innerText,
+                emoji: group.emoji
+            });
             if(groupId == 0){
-                console.log('primero:');
-                let id = cell.getAttribute('data-id');
-                group = findGroup(id, solution);
                 groupId = group.groupId;
-                console.log('grupo ' + groupId);
             }else{
-                let curGroup = findGroup(cell.getAttribute('data-id'), solution);
-                if(curGroup && curGroup.groupId != groupId){
+                if(group && group.groupId != groupId){
                     correct = false;
                 }
             }
         })
+        statistic.push(options);
         if(correct){
-            cells.forEach(cell => {
-                cell.classList.remove('active');
-                let row = checks + 1;
-                let col = parseInt(cell.getAttribute('data-order')) + 1;
-                let cellInPos = document.querySelector('.cell.row-' + row + '.col-' + col);
-                cellInPos.classList = cell.classList;
-                cell.classList = ['cell row-' + row + ' col-' + col];
-                cell.classList.add('checked');
-                cell.style.backgroundColor = group.color;
-            })
-            
-            let groupId = cells[0].getAttribute('data-id');
-            showTitle(groupId, checks);
+            reorderCells(group);// ---> CREAR UNA FUNCIÓN DE REORDENACIÓN PARA LLAMAR AQUí Y EN GAMEENDED.
             checks++;
             counter = 0;
         }else{
             cells.forEach(cell => {
-                cell.classList.remove('active');
+                cell.classList.add('error');
             })
-            counter = 0;
+            setTimeout(() => {                
+                cells.forEach(cell => {
+                    cell.classList.remove('error');
+                })
+            }, 1000);
             errorCount++;
             let errorLI = document.querySelectorAll("#tries li:not(.explode)");
             errorLI[errorLI.length - 1].classList.add('explode');
-            document.querySelector("#messages b").innerText = 4 - errorCount;
+            document.querySelector("#messages").innerHTML = "Selecciona cuatro casillas, tienes <b>" + (4 - errorCount) + "</b> intentos.";
         }
 
         if(errorCount > 3 || checks == 4){            
             showMessage("Fin de la partida", "warning", true);
-            gameEnded(checks);
+            gameEnded(checks, statistic);
             final = true;
         }
     }else{
@@ -169,7 +171,7 @@ function showMessage(text, status = "warning", end = false){
 
 }
 
-function gameEnded(checks){
+function gameEnded(checks, statistic){
     document.querySelector("#actions").style.opacity = 0;
     document.querySelector("#submit").style.pointerEvents = "none";
     if(checks < 4){
@@ -181,12 +183,15 @@ function gameEnded(checks){
                 group.ids.forEach(id => {                    
                     let cell = document.querySelector('[data-id = "' + id + '"]');
                     cell.classList.add('checked');
-                    cell.style.order = i;
                     cell.style.backgroundColor = group.color;
+                    showTitle(id, i)
                 });
+                reorderCells();
             }, (i - checks) * 1000);
         }
     }
+    console.log(statistic);
+    //MOSTRAR STATISTICS
 }
 
 function findGroup(id, datos) {
@@ -198,7 +203,8 @@ function findGroup(id, datos) {
                 ids: groupData.ids,
                 color: groupData.color,
                 title: groupData.title,
-                texts: groupData.texts
+                texts: groupData.texts,
+                emoji: groupData.emoji
             };
         }
     }
@@ -249,4 +255,20 @@ function showTitle(groupId, row){
         line.style.opacity = 1;
     }, 1);
     
+}
+
+function reorderCells(group){
+    group.ids.forEach(id => {
+        let cell = document.querySelector("[data-id='"+id+"']");
+        cell.classList.remove('active');
+        let row = checks + 1;
+        let col = parseInt(cell.getAttribute('data-order')) + 1;
+        let cellInPos = document.querySelector('.cell.row-' + row + '.col-' + col);
+        cellInPos.classList = cell.classList;
+        cell.classList = ['cell row-' + row + ' col-' + col];
+        cell.classList.add('checked');
+        cell.style.backgroundColor = group.color;
+    });
+    let groupId =  group.id;
+    showTitle(group.ids[0], checks);
 }
