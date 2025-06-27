@@ -3,6 +3,7 @@ import '../scss/styles.scss';
 
 const solution = {
     1: {
+        groupId: 1,
         ids: ["1", "2", "3", "4"],
         texts: ["Comisiones", "Solidaridad", "Unión", "Confederación"],
         color: "#579c1e", 
@@ -10,6 +11,7 @@ const solution = {
         emoji: "🟩"
     },
     2: {
+        groupId: 2,
         ids: ["5", "6", "7", "8"],
         texts: ["Esponja", "Coral", "Crucero", "Ola"],
         color: "#1e559c",
@@ -17,6 +19,7 @@ const solution = {
         emoji: "🟦"
     },
     3: {
+        groupId: 3,
         ids: ["9", "10", "11", "12"],
         texts: ["Apatía", "Cabeza", "Entuerto", "Parasol"],
         color: "#c230b6",
@@ -24,6 +27,7 @@ const solution = {
         emoji: "🟪"
     },
     4: {
+        groupId: 4,
         ids: ["13", "14", "15", "16"],
         texts: ["Crew", "Asamblea", "Colectivo", "Peña"],
         color: "#ecde14",
@@ -34,37 +38,45 @@ const solution = {
 
 let statistic = [];
 
+printGrid();
 
-let allElements = [];
-for (const [groupKey, groupData] of Object.entries(solution)) {
-    let counterPosition = 0;
-    for(let i = 0; i < 4; i++){
-        allElements.push({
-            id: groupData.ids[i],
-            text: groupData.texts[i],
-            order: i
-        })
+
+
+function printGrid(){
+    let allElements = [];
+
+    for (const [groupKey, groupData] of Object.entries(solution)) {
+        let counterPosition = 0;
+        for(let i = 0; i < 4; i++){
+            allElements.push({
+                id: groupData.ids[i],
+                text: groupData.texts[i],
+                order: i
+            })
+        }
     }
+
+    shuffleArray(allElements);
+
+    let row = 1;
+    let cellsCounter = 1;
+
+    allElements.forEach(element => {
+        if(cellsCounter == 5){
+            row++;
+            cellsCounter = 1;
+        }
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.classList.add('row-' + row);
+        cell.classList.add('col-' + cellsCounter);
+        cell.innerText = element.text;
+        cell.setAttribute('data-id', element.id);
+        cell.setAttribute('data-order', element.order);
+        document.getElementById('grid').appendChild(cell);
+        cellsCounter++;
+    });
 }
-shuffleArray(allElements);
-let row = 1;
-let cellsCounter = 1;
-allElements.forEach(element => {
-    if(cellsCounter == 5){
-        row++;
-        cellsCounter = 1;
-    }
-    let cell = document.createElement('div');
-    cell.classList.add('cell');
-    cell.classList.add('row-' + row);
-    cell.classList.add('col-' + cellsCounter);
-    cell.innerText = element.text;
-    cell.setAttribute('data-id', element.id);
-    cell.setAttribute('data-order', element.order);
-    document.getElementById('grid').appendChild(cell);
-    cellsCounter++;
-});
-
 
 
 
@@ -75,6 +87,8 @@ let errorCount = 0;
 let checks = 0;
 let final = false;
 
+document.querySelector("#open-modal").addEventListener("click", () => { toggleModal() });
+document.querySelector("#close-modal").addEventListener("click", () => { toggleModal() });
 
 cells.forEach(cell => {
     cell.addEventListener('click', function(){
@@ -92,8 +106,6 @@ cells.forEach(cell => {
         }
     })
 });
-
-
 
 let submit = document.querySelector('#submit');
 
@@ -122,7 +134,7 @@ submit.addEventListener("click", function(){
         })
         statistic.push(options);
         if(correct){
-            reorderCells(group);// ---> CREAR UNA FUNCIÓN DE REORDENACIÓN PARA LLAMAR AQUí Y EN GAMEENDED.
+            reorderCells(group, checks, 0);
             checks++;
             counter = 0;
         }else{
@@ -142,7 +154,9 @@ submit.addEventListener("click", function(){
 
         if(errorCount > 3 || checks == 4){            
             showMessage("Fin de la partida", "warning", true);
-            gameEnded(checks, statistic);
+            setTimeout(() => {
+                gameEnded(checks, statistic);
+            }, 1000);
             final = true;
         }
     }else{
@@ -152,18 +166,12 @@ submit.addEventListener("click", function(){
 
 
 function showMessage(text, status = "warning", end = false){
-    //let modal = document.querySelector("#modal");
-    //let message = document.querySelector("#message");
     let messages = document.querySelector("#messages");
     let prevText = messages.innerText;
-    //message.innerText = text;
-    //message.classList = [status];
     messages.innerText = text;
     messages.classList = [status];
-    //modal.classList.add('active');
     if(!end){
         setTimeout(() => {
-            //modal.classList.remove('active');
             messages.innerText = prevText;
             messages.classList = [];
         }, 2000);
@@ -172,43 +180,29 @@ function showMessage(text, status = "warning", end = false){
 }
 
 function gameEnded(checks, statistic){
-    document.querySelector("#actions").style.opacity = 0;
+    document.querySelector("#actions").style.display = "none";
     document.querySelector("#submit").style.pointerEvents = "none";
-    if(checks < 4){
-        for(let i = checks; i < 4; i++){
-            setTimeout(() => {
-                let unchecked = document.querySelector(".cell:not(.checked)");            
-                let id = unchecked.getAttribute('data-id');
-                let group = findGroup(id, solution);
-                group.ids.forEach(id => {                    
-                    let cell = document.querySelector('[data-id = "' + id + '"]');
-                    cell.classList.add('checked');
-                    cell.style.backgroundColor = group.color;
-                    showTitle(id, i)
-                });
-                reorderCells();
-            }, (i - checks) * 1000);
+    let round = 1;
+    for (const groupId in solution) {
+        if (solution.hasOwnProperty(groupId)) { 
+            const group = solution[groupId];
+            reorderCells(group, checks++, (round) * 1000);
         }
+        round++;
     }
-    console.log(statistic);
-    //MOSTRAR STATISTICS
+    setTimeout(() => {        
+        printStatistics();
+    }, (round + 2) * 1000);
 }
 
 function findGroup(id, datos) {
     const idStr = id.toString();    
     for (const [groupKey, groupData] of Object.entries(datos)) {
         if (groupData.ids.includes(idStr)) {
-            return {
-                groupId: groupKey,
-                ids: groupData.ids,
-                color: groupData.color,
-                title: groupData.title,
-                texts: groupData.texts,
-                emoji: groupData.emoji
-            };
+            return groupData;
         }
     }
-    return null; // Si no se encuentra el ID en ningún grupo
+    return null;
 }
 
 
@@ -222,9 +216,7 @@ function shuffleArray(array) {
     }
 }
 
-function showTitle(groupId, row){
-    const group = findGroup(groupId, solution);
-    
+function showTitle(group, row){
     let line = document.createElement('div');
 
     line.classList.add('solution-line');
@@ -234,8 +226,6 @@ function showTitle(groupId, row){
     title.innerText = group.title;
 
     let ul = document.createElement('ul');
-
-    console.log(group);
 
     group.texts.forEach(element => {        
         let li = document.createElement('li');
@@ -257,18 +247,44 @@ function showTitle(groupId, row){
     
 }
 
-function reorderCells(group){
-    group.ids.forEach(id => {
-        let cell = document.querySelector("[data-id='"+id+"']");
+function reorderCells(group, rowVal, delay){
+    for(let i = 0; i < group.ids.length; i++){
+        let cell = document.querySelector("[data-id='" + group.ids[i] + "']");
         cell.classList.remove('active');
-        let row = checks + 1;
-        let col = parseInt(cell.getAttribute('data-order')) + 1;
+        let row = rowVal + 1;
+        let col = i + 1;
         let cellInPos = document.querySelector('.cell.row-' + row + '.col-' + col);
         cellInPos.classList = cell.classList;
         cell.classList = ['cell row-' + row + ' col-' + col];
         cell.classList.add('checked');
         cell.style.backgroundColor = group.color;
+    }
+    setTimeout(() => {
+        showTitle(group, rowVal);
+    }, delay);
+    
+    
+    delete solution[group.groupId];
+}
+
+function printStatistics(){
+    let emojis = "";
+    statistic.forEach(line => {
+        let div = document.createElement('div');
+        line.forEach(pulse => {
+            div.innerText += pulse.emoji;
+            emojis += pulse.emoji;
+        });
+        emojis += "%0a";
+        document.querySelector("#results").prepend(div);
     });
-    let groupId =  group.id;
-    showTitle(group.ids[0], checks);
+    var encodedURL = encodeURIComponent("https://lopandpe.github.io/conexiones/");
+    let linkText = "whatsapp://send?text=¡Vaya juegazo!%0a" + emojis + "%0aJuega aquí: " + encodedURL;
+    document.querySelector("#whatsapp").setAttribute("href", linkText);
+    document.querySelector("#open-modal").style.display = "block";
+    toggleModal();
+}
+
+function toggleModal(){
+    document.querySelector("#modal").classList.toggle('active');
 }
