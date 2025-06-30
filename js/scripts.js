@@ -5,48 +5,93 @@ const solution = {
     1: {
         groupId: 1,
         ids: ["1", "2", "3", "4"],
-        texts: ["Comisiones", "Solidaridad", "Unión", "Confederación"],
+        texts: ["Teléfono", "Bolígrafo", "Cubilete", "Ordenador"],
         color: "#579c1e", 
-        title: "Inicial de sindicato",
+        title: "En la mesa de oficina",
         emoji: "🟩"
     },
     2: {
         groupId: 2,
         ids: ["5", "6", "7", "8"],
-        texts: ["Esponja", "Coral", "Crucero", "Ola"],
+        texts: ["Llamada", "Silbo canario", "Humo", "Gritos"],
         color: "#1e559c",
-        title: "En el mar",
+        title: "Formas de comunicarse",
         emoji: "🟦"
     },
     3: {
         groupId: 3,
         ids: ["9", "10", "11", "12"],
-        texts: ["Apatía", "Cabeza", "Entuerto", "Parasol"],
+        texts: ["Soledad", "Rosas", "París", "La playa"],
         color: "#c230b6",
-        title: "Comienzan con una preposición",
+        title: "Canciones de la Oreja de Van Gogh",
         emoji: "🟪"
     },
     4: {
         groupId: 4,
         ids: ["13", "14", "15", "16"],
-        texts: ["Crew", "Asamblea", "Colectivo", "Peña"],
+        texts: ["Oso", "Reconocer", "Salas", "Yo soy"],
         color: "#ecde14",
-        title: "Grupo de personas",
+        title: "Palíndromos",
         emoji: "🟨"
     }
 };
 
-let statistic = [];
+
+// ——— Configuración de guardado por día ———
+const todayKey = new Date().toISOString().split("T")[0];
+const localStorageKey = `conexiones-${todayKey}`;
+const statsKey = 'conexiones-stats';
+const initialGameData = Object.assign(
+  {},
+  {
+  errorCount: 0,
+  statistic: [],
+  todayResults: [],
+  statsUpdated: false,
+  checks: 0,
+  final: false,
+  placedGroups: []
+},
+  JSON.parse(localStorage.getItem(localStorageKey) || '{}')
+);
+let gameData = initialGameData;
+
+const initialStats = {
+  totalDays: 0,
+  buckets: { 0: 0, 1: 0, 2: 0, 3: 0, fail: 0 },
+  streak: 0
+};
+
+let globalStats = Object.assign(
+  {},
+  initialStats,
+  JSON.parse(localStorage.getItem(statsKey) || '{}')
+);
+
+function saveGameState() {
+  localStorage.setItem(localStorageKey, JSON.stringify(gameData));
+}
+
+function saveGlobalStats() {
+  localStorage.setItem(statsKey, JSON.stringify(globalStats));
+}
+
+let message = "";
+let counter = 0;
+
+document.querySelector("#open-modal").addEventListener("click", () => { toggleModal() });
+document.querySelector("#close-modal").addEventListener("click", () => { toggleModal() });
+
 
 printGrid();
-
-
+setTimeout(() => {
+    restoreState();
+}, 100);
 
 function printGrid(){
     let allElements = [];
 
     for (const [groupKey, groupData] of Object.entries(solution)) {
-        let counterPosition = 0;
         for(let i = 0; i < 4; i++){
             allElements.push({
                 id: groupData.ids[i],
@@ -80,19 +125,23 @@ function printGrid(){
 
 
 
-let cells = document.querySelectorAll('.cell');
-let counter = 0;
-let message = "";
-let errorCount = 0;
-let checks = 0;
-let final = false;
+function restoreState(){
+  gameData.placedGroups.forEach((groupId, idx) => {
+    const group = solution[groupId];
+    if(group) reorderCells(group, idx, 0);
+  });
+  document.querySelector("#messages").innerHTML = "Selecciona cuatro casillas, tienes <b>" + (4 - gameData.errorCount) + "</b> intentos.";
+  if (gameData.final) {
+    setTimeout(() => gameEnded(gameData.checks), 100);
+  }
+}
 
-document.querySelector("#open-modal").addEventListener("click", () => { toggleModal() });
-document.querySelector("#close-modal").addEventListener("click", () => { toggleModal() });
+
+let cells = document.querySelectorAll('.cell');
 
 cells.forEach(cell => {
     cell.addEventListener('click', function(){
-        if(!final){
+        if(!gameData.final){
             message = "";
             if(this.classList.contains('active')){
                 this.classList.remove('active');
@@ -132,10 +181,12 @@ submit.addEventListener("click", function(){
                 }
             }
         })
-        statistic.push(options);
+        gameData.todayResults.push(options);
         if(correct){
-            reorderCells(group, checks, 0);
-            checks++;
+            reorderCells(group, gameData.checks, gameData.checks * 500);
+            gameData.placedGroups.push(groupId);
+            gameData.checks++;
+            gameData.checks = gameData.checks;
             counter = 0;
         }else{
             cells.forEach(cell => {
@@ -146,22 +197,25 @@ submit.addEventListener("click", function(){
                     cell.classList.remove('error');
                 })
             }, 1000);
-            errorCount++;
+            gameData.errorCount++;
             let errorLI = document.querySelectorAll("#tries li:not(.explode)");
             errorLI[errorLI.length - 1].classList.add('explode');
-            document.querySelector("#messages").innerHTML = "Selecciona cuatro casillas, tienes <b>" + (4 - errorCount) + "</b> intentos.";
+            document.querySelector("#messages").innerHTML = "Selecciona cuatro casillas, tienes <b>" + (4 - gameData.errorCount) + "</b> intentos.";
         }
 
-        if(errorCount > 3 || checks == 4){            
+        if(gameData.errorCount > 3 || gameData.checks == 4){            
             showMessage("Fin de la partida", "warning", true);
             setTimeout(() => {
-                gameEnded(checks, statistic);
+                gameEnded(gameData.checks);
             }, 1000);
-            final = true;
+            gameData.final = true;
+            gameData.final = true;
+            saveGameState();
         }
     }else{
             showMessage("Debes seleccionar cuatro casillas", "warning");
     }
+    saveGameState();
 })
 
 
@@ -179,19 +233,25 @@ function showMessage(text, status = "warning", end = false){
 
 }
 
-function gameEnded(checks, statistic){
+function gameEnded(){
     document.querySelector("#actions").style.display = "none";
     document.querySelector("#submit").style.pointerEvents = "none";
     let round = 1;
     for (const groupId in solution) {
         if (solution.hasOwnProperty(groupId)) { 
             const group = solution[groupId];
-            reorderCells(group, checks++, (round) * 1000);
+            reorderCells(group, gameData.checks++, (round) * 1000);
         }
         round++;
     }
+    if (!gameData.statsUpdated) {
+        updateGlobalStats();
+        gameData.statsUpdated = true;
+        saveGameState();
+    }
+
     setTimeout(() => {        
-        printStatistics();
+        printTodayResults();
     }, (round + 2) * 1000);
 }
 
@@ -267,9 +327,9 @@ function reorderCells(group, rowVal, delay){
     delete solution[group.groupId];
 }
 
-function printStatistics(){
+function printTodayResults(){
     let emojis = "";
-    statistic.forEach(line => {
+    gameData.todayResults.forEach(line => {
         let div = document.createElement('div');
         line.forEach(pulse => {
             div.innerText += pulse.emoji;
@@ -278,13 +338,44 @@ function printStatistics(){
         emojis += "%0a";
         document.querySelector("#results").prepend(div);
     });
-    var encodedURL = encodeURIComponent("https://lopandpe.github.io/conexiones/");
+    var encodedURL = encodeURIComponent(location.href);
     let linkText = "whatsapp://send?text=¡Vaya juegazo!%0a" + emojis + "%0aJuega aquí: " + encodedURL;
     document.querySelector("#whatsapp").setAttribute("href", linkText);
     document.querySelector("#open-modal").style.display = "block";
+
+    const res = document.querySelector("#fullstats");
+    const pct = (n) => ((n / globalStats.totalDays) * 100).toFixed(1) + '%';
+    const statsHTML = `
+        <h2>Estadísticas históricas</h2>
+        <ul id="stats">
+            <li><span>Sin fallos:</span> <span>${globalStats.buckets[0]} (${pct(globalStats.buckets[0])})</span></li>
+            <li><span>1 fallo:</span> <span>${globalStats.buckets[1]} (${pct(globalStats.buckets[1])})</span></li>
+            <li><span>2 fallos:</span> <span>${globalStats.buckets[2]} (${pct(globalStats.buckets[2])})</span></li>
+            <li><span>3 fallos:</span> <span>${globalStats.buckets[3]} (${pct(globalStats.buckets[3])})</span></li>
+            <li><span>No resuelto:</span> <span>${globalStats.buckets.fail} (${pct(globalStats.buckets.fail)})</span></li>
+        </ul>
+        <p>Racha actual ganando: <b>${globalStats.streak}</b> días</p>
+    `;
+    res.insertAdjacentHTML('beforeend', statsHTML);
+
+
     toggleModal();
 }
 
 function toggleModal(){
     document.querySelector("#modal").classList.toggle('active');
+}
+
+
+function updateGlobalStats() {
+  globalStats.totalDays++;
+  const errs = gameData.errorCount;
+  if (errs >= 0 && errs <= 3) {
+    globalStats.buckets[errs]++;
+    globalStats.streak++;
+  } else {
+    globalStats.buckets.fail++;
+    globalStats.streak = 0;
+  }
+  saveGlobalStats();
 }

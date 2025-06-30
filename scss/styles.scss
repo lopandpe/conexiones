@@ -161,7 +161,6 @@ body {
     #message{
         background-color:#FFF;
         width: 335px;
-        height: 335px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -191,6 +190,41 @@ body {
                 transform: rotate(-45deg);
             }
         }
+        #results{
+            font-size: 24px;
+        }
+        h2, h3{
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        h3{
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        #fullstats{
+            margin: 30px auto;
+            #stats{
+                list-style: none;
+                padding: 0px;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                list-style: none;
+                padding: 0px;
+                gap: 5px;
+                text-align: left;
+                li{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    span{
+                        display: block;
+                        width: 100%;
+                        flex-grow: 1;
+                    }
+                }
+            }
+        }
     }
     &.active{
         inset: 0;
@@ -211,6 +245,7 @@ body {
         position: relative;
         transition: opacity 0.5s ease-out 1s;
         opacity: 1;
+        font-size: 16px;
         &:after, &:before{
             display: block;
             content: "";
