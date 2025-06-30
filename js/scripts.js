@@ -79,9 +79,19 @@ function saveGlobalStats() {
 let message = "";
 let counter = 0;
 
-document.querySelector("#open-modal").addEventListener("click", () => { toggleModal() });
-document.querySelector("#close-modal").addEventListener("click", () => { toggleModal() });
+if(globalStats.totalDays == 0){
+    document.querySelector("#instructions").classList.toggle('active');
+}
 
+
+document.querySelector("#open-modal").addEventListener("click", () => { toggleModal("#modal") });
+document.querySelectorAll(".close-modal").forEach(element => {
+  element.addEventListener("click", () => {
+    const grandparent = element.parentElement.parentElement;
+    const id = grandparent.getAttribute('id');
+    toggleModal(`#${id}`);
+  });
+});
 
 printGrid();
 setTimeout(() => {
@@ -359,11 +369,11 @@ function printTodayResults(){
     res.insertAdjacentHTML('beforeend', statsHTML);
 
 
-    toggleModal();
+    toggleModal("#modal");
 }
 
-function toggleModal(){
-    document.querySelector("#modal").classList.toggle('active');
+function toggleModal(element){
+    document.querySelector(element).classList.toggle('active');
 }
 
 
