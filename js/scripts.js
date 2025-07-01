@@ -5,33 +5,33 @@ const solution = {
     1: {
         groupId: 1,
         ids: ["1", "2", "3", "4"],
-        texts: ["Teléfono", "Bolígrafo", "Cubilete", "Ordenador"],
+        texts: ["Vinilo", "Sol", "Donut", "Volante"],
         color: "#579c1e", 
-        title: "En la mesa de oficina",
+        title: "Cosas redondas",
         emoji: "🟩"
     },
     2: {
         groupId: 2,
         ids: ["5", "6", "7", "8"],
-        texts: ["Llamada", "Silbo canario", "Humo", "Gritos"],
+        texts: ["En", "Un", "Lugar", "De"],
         color: "#1e559c",
-        title: "Formas de comunicarse",
+        title: "Inicio de Don Quijote",
         emoji: "🟦"
     },
     3: {
         groupId: 3,
         ids: ["9", "10", "11", "12"],
-        texts: ["Soledad", "Rosas", "París", "La playa"],
+        texts: ["Para", "Stop", "Alto", "Basta"],
         color: "#c230b6",
-        title: "Canciones de la Oreja de Van Gogh",
+        title: "Quédate donde estás",
         emoji: "🟪"
     },
     4: {
         groupId: 4,
         ids: ["13", "14", "15", "16"],
-        texts: ["Oso", "Reconocer", "Salas", "Yo soy"],
+        texts: ["Calculadora", "Calendario", "Navegador", "Galería"],
         color: "#ecde14",
-        title: "Palíndromos",
+        title: "Aplicaciones de un smartphone",
         emoji: "🟨"
     }
 };
@@ -136,13 +136,16 @@ function printGrid(){
 
 
 function restoreState(){
-  gameData.placedGroups.forEach((groupId, idx) => {
-    const group = solution[groupId];
-    if(group) reorderCells(group, idx, 0);
-  });
-  document.querySelector("#messages").innerHTML = "Selecciona cuatro casillas, tienes <b>" + (4 - gameData.errorCount) + "</b> intentos.";
-  if (gameData.final) {
-    setTimeout(() => gameEnded(gameData.checks), 100);
+  
+  if(!gameData.final){
+     gameData.placedGroups.forEach((groupId, idx) => {
+        const group = solution[groupId];
+        if(group) reorderCells(group, idx, 0);
+    });
+    document.querySelector("#messages").innerHTML = "Selecciona cuatro casillas, tienes <b>" + (4 - gameData.errorCount) + "</b> intentos.";
+  }else{
+    gameData.checks = 0;
+    setTimeout(() => gameEnded(), 100);
   }
 }
 
@@ -213,8 +216,7 @@ submit.addEventListener("click", function(){
             document.querySelector("#messages").innerHTML = "Selecciona cuatro casillas, tienes <b>" + (4 - gameData.errorCount) + "</b> intentos.";
         }
 
-        if(gameData.errorCount > 3 || gameData.checks == 4){            
-            showMessage("Fin de la partida", "warning", true);
+        if(gameData.errorCount > 3 || gameData.checks == 4){     
             setTimeout(() => {
                 gameEnded(gameData.checks);
             }, 1000);
@@ -243,7 +245,8 @@ function showMessage(text, status = "warning", end = false){
 
 }
 
-function gameEnded(){
+function gameEnded(){       
+    showMessage("Fin de la partida", "warning", true);
     document.querySelector("#actions").style.display = "none";
     document.querySelector("#submit").style.pointerEvents = "none";
     let round = 1;
@@ -318,11 +321,15 @@ function showTitle(group, row){
 }
 
 function reorderCells(group, rowVal, delay){
+    console.log(group);
+    console.log(rowVal);
     for(let i = 0; i < group.ids.length; i++){
         let cell = document.querySelector("[data-id='" + group.ids[i] + "']");
+        console.log(cell);
         cell.classList.remove('active');
         let row = rowVal + 1;
         let col = i + 1;
+        console.log('.cell.row-' + row + '.col-' + col);
         let cellInPos = document.querySelector('.cell.row-' + row + '.col-' + col);
         cellInPos.classList = cell.classList;
         cell.classList = ['cell row-' + row + ' col-' + col];
@@ -346,7 +353,7 @@ function printTodayResults(){
             emojis += pulse.emoji;
         });
         emojis += "%0a";
-        document.querySelector("#results").prepend(div);
+        document.querySelector("#results").append(div);
     });
     var encodedURL = encodeURIComponent(location.href);
     let linkText = "whatsapp://send?text=¡Vaya juegazo!%0a" + emojis + "%0aJuega aquí: " + encodedURL;
