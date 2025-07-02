@@ -1,44 +1,44 @@
 import '../scss/styles.scss';
 
-
+const day = "20250702";
 const solution = {
     1: {
         groupId: 1,
         ids: ["1", "2", "3", "4"],
-        texts: ["Vinilo", "Sol", "Donut", "Volante"],
+        texts: ["Dosel", "Militar", "Docente", "Seísmo"],
         color: "#579c1e", 
-        title: "Cosas redondas",
+        title: "Comienzan con números",
         emoji: "🟩"
     },
     2: {
         groupId: 2,
         ids: ["5", "6", "7", "8"],
-        texts: ["En", "Un", "Lugar", "De"],
+        texts: ["Bajo", "Plomo", "Mar", "Grado"],
         color: "#1e559c",
-        title: "Inicio de Don Quijote",
+        title: "Anteponiendo A- cambia el significado",
         emoji: "🟦"
     },
     3: {
         groupId: 3,
         ids: ["9", "10", "11", "12"],
-        texts: ["Para", "Stop", "Alto", "Basta"],
+        texts: ["Tronco", "Tío", "Macho", "Socio"],
         color: "#c230b6",
-        title: "Quédate donde estás",
+        title: "Sinónimos de 'colega'",
         emoji: "🟪"
     },
     4: {
         groupId: 4,
         ids: ["13", "14", "15", "16"],
-        texts: ["Calculadora", "Calendario", "Navegador", "Galería"],
+        texts: ["Marea", "Extremo", "Barricada", "Platero"],
         color: "#ecde14",
-        title: "Aplicaciones de un smartphone",
+        title: "Grupos de Rock",
         emoji: "🟨"
     }
 };
 
 
 // ——— Configuración de guardado por día ———
-const todayKey = new Date().toISOString().split("T")[0];
+const todayKey = day;
 const localStorageKey = `conexiones-${todayKey}`;
 const statsKey = 'conexiones-stats';
 const initialGameData = Object.assign(
