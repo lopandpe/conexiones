@@ -1,6 +1,11 @@
 import '../scss/styles.scss';
 
-const day = "20250702";
+const dateStr = "02/07/2025"; 
+
+const [day, month, year] = dateStr.split('/').map(Number);
+
+const date = new Date(year, month - 1, day);
+
 const solution = {
     1: {
         groupId: 1,
@@ -37,24 +42,40 @@ const solution = {
 };
 
 
+const months = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+
+// Formatear la fecha como quieres
+const dateText = `Jueguito del ${String(day).padStart(2, '0')} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
+
+
+document.getElementById('gametitle').textContent = dateText;
+
 // ——— Configuración de guardado por día ———
-const todayKey = day;
-const localStorageKey = `conexiones-${todayKey}`;
+const storedData = JSON.parse(localStorage.getItem('conexiones') || '{}');
+const todayStr = `${year}${String(month).padStart(2,'0')}${String(day).padStart(2,'0')}`;
+const localStorageKey = `conexiones`;
 const statsKey = 'conexiones-stats';
-const initialGameData = Object.assign(
-  {},
-  {
-  errorCount: 0,
-  statistic: [],
-  todayResults: [],
-  statsUpdated: false,
-  checks: 0,
-  final: false,
-  placedGroups: []
-},
-  JSON.parse(localStorage.getItem(localStorageKey) || '{}')
-);
-let gameData = initialGameData;
+// Verificar si ya jugaron hoy
+if (storedData.lastDate === todayStr) {
+  // Ya jugaron hoy: recupera datos
+  var gameData = storedData.data;
+  console.log("Ya jugaron hoy, recuperando progreso");
+} else {
+  // No han jugado hoy, inicializa nuevo día
+  var gameData = {
+    errorCount: 0,
+    statistic: [],
+    todayResults: [],
+    statsUpdated: false,
+    checks: 0,
+    final: false,
+    placedGroups: []
+  };
+  console.log("Nuevo día, juego reiniciado");
+}
 
 const initialStats = {
   totalDays: 0,
@@ -69,7 +90,13 @@ let globalStats = Object.assign(
 );
 
 function saveGameState() {
-  localStorage.setItem(localStorageKey, JSON.stringify(gameData));
+  localStorage.setItem(
+    localStorageKey,
+    JSON.stringify({
+      lastDate: todayStr,
+      data: gameData
+    })
+  );
 }
 
 function saveGlobalStats() {
@@ -321,15 +348,11 @@ function showTitle(group, row){
 }
 
 function reorderCells(group, rowVal, delay){
-    console.log(group);
-    console.log(rowVal);
     for(let i = 0; i < group.ids.length; i++){
         let cell = document.querySelector("[data-id='" + group.ids[i] + "']");
-        console.log(cell);
         cell.classList.remove('active');
         let row = rowVal + 1;
         let col = i + 1;
-        console.log('.cell.row-' + row + '.col-' + col);
         let cellInPos = document.querySelector('.cell.row-' + row + '.col-' + col);
         cellInPos.classList = cell.classList;
         cell.classList = ['cell row-' + row + ' col-' + col];
