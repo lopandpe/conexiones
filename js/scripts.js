@@ -1,6 +1,6 @@
 import '../scss/styles.scss';
 
-const dateStr = "02/07/2025"; 
+const dateStr = "03/07/2025"; 
 
 const [day, month, year] = dateStr.split('/').map(Number);
 
@@ -10,33 +10,33 @@ const solution = {
     1: {
         groupId: 1,
         ids: ["1", "2", "3", "4"],
-        texts: ["Dosel", "Militar", "Docente", "Seísmo"],
+        texts: ["Manco", "Alcalá", "Molinos", "Siglo de oro"],
         color: "#579c1e", 
-        title: "Comienzan con números",
+        title: "Miguel de Cervantes",
         emoji: "🟩"
     },
     2: {
         groupId: 2,
         ids: ["5", "6", "7", "8"],
-        texts: ["Bajo", "Plomo", "Mar", "Grado"],
+        texts: ["Diario", "Anillo", "Diadema", "Serpiente"],
         color: "#1e559c",
-        title: "Anteponiendo A- cambia el significado",
+        title: "Horrocruxes",
         emoji: "🟦"
     },
     3: {
         groupId: 3,
         ids: ["9", "10", "11", "12"],
-        texts: ["Tronco", "Tío", "Macho", "Socio"],
+        texts: ["Real", "Deportivo", "Atlético", "Rayo"],
         color: "#c230b6",
-        title: "Sinónimos de 'colega'",
+        title: "Iniciales Equipos de Fútbol'",
         emoji: "🟪"
     },
     4: {
         groupId: 4,
         ids: ["13", "14", "15", "16"],
-        texts: ["Marea", "Extremo", "Barricada", "Platero"],
+        texts: ["Amor", "Roma", "Ramo", "Mora"],
         color: "#ecde14",
-        title: "Grupos de Rock",
+        title: "Mismas letras",
         emoji: "🟨"
     }
 };
@@ -380,7 +380,9 @@ function printTodayResults(){
     });
     var encodedURL = encodeURIComponent(location.href);
     let linkText = "whatsapp://send?text=¡Vaya juegazo!%0a" + emojis + "%0aJuega aquí: " + encodedURL;
+    let telegramText =  "https://t.me/share/url?url=encodedURL&text=¡Vaya juegazo!%0a" + emojis;
     document.querySelector("#whatsapp").setAttribute("href", linkText);
+    document.querySelector("#telegram").setAttribute("href", telegramText);
     document.querySelector("#open-modal").style.display = "block";
 
     const res = document.querySelector("#fullstats");

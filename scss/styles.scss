@@ -234,8 +234,23 @@ body {
     &.active{
         inset: 0;
     }
-    a svg{
-        width: 30px;
+    .links{
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        a{
+            text-decoration: none;
+        }
+        a#whatsapp{
+            svg{
+                width: 30px;
+            }
+        }
+        a#telegram{
+            svg{
+                width: 22px;
+            }
+        }
     }
     p{
         text-align: left;
