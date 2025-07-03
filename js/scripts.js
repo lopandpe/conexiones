@@ -380,7 +380,7 @@ function printTodayResults(){
     });
     var encodedURL = encodeURIComponent(location.href);
     let linkText = "whatsapp://send?text=¡Vaya juegazo!%0a" + emojis + "%0aJuega aquí: " + encodedURL;
-    let telegramText =  "https://t.me/share/url?url=encodedURL&text=¡Vaya juegazo!%0a" + emojis;
+    let telegramText =  "https://t.me/share/url?url=" + encodedURL + "&text=¡Vaya juegazo!%0a" + emojis;
     document.querySelector("#whatsapp").setAttribute("href", linkText);
     document.querySelector("#telegram").setAttribute("href", telegramText);
     document.querySelector("#open-modal").style.display = "block";
