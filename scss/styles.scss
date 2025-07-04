@@ -15,7 +15,6 @@ body {
     height: 100%;
 }
 .container{
-    width: 335px;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -170,25 +169,30 @@ body {
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        max-height: 100%;
+        overflow: scroll;
+        transform: translate(-50%, -50%);
         color: #000;
         padding: 20px;
         box-shadow: 0px 0px 20px -5px rgba(255, 255, 255, 0.6);
-        position: relative;
         .close-modal{
             position: absolute;
             top: 2px;
             right: 8px;
-            width: 11px;
-            height: 11px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             &:after, &:before{
                 content: "";
                 position: absolute;
-                width: 2px;
-                height: 12px;
+                width: 3px;
+                height: 20px;
                 background-color: rgb(177, 19, 19);
-                left: 6px;
-                top: 6px;
+                left: 10px;
+                top: 10px;
                 transform: rotate(45deg);
             }
             &:before{
@@ -294,5 +298,11 @@ body {
                 background-color: rgb(216, 38, 38);
             }
         }
+    }
+}
+
+@media screen and (max-height: 700px){
+    body {
+        justify-content: flex-start;
     }
 }
