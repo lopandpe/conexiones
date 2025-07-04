@@ -1,6 +1,6 @@
 import '../scss/styles.scss';
 
-const dateStr = "03/07/2025"; 
+const dateStr = "04/07/2025"; 
 
 const [day, month, year] = dateStr.split('/').map(Number);
 
@@ -10,33 +10,33 @@ const solution = {
     1: {
         groupId: 1,
         ids: ["1", "2", "3", "4"],
-        texts: ["Manco", "Alcalá", "Molinos", "Siglo de oro"],
-        color: "#579c1e", 
-        title: "Miguel de Cervantes",
-        emoji: "🟩"
+        texts: ["Ajedrez", "Casablanca", "Michael Jackson", "Oreo"],
+        color: "#6c6c6c", 
+        title: "Blanco y negro",
+        emoji: "🟫"
     },
     2: {
         groupId: 2,
         ids: ["5", "6", "7", "8"],
-        texts: ["Diario", "Anillo", "Diadema", "Serpiente"],
-        color: "#1e559c",
-        title: "Horrocruxes",
-        emoji: "🟦"
+        texts: ["Corazón", "URSS", "Tomate", "Elmo"],
+        color: "#ff5733",
+        title: "Cosas rojas",
+        emoji: "🟥"
     },
     3: {
         groupId: 3,
         ids: ["9", "10", "11", "12"],
-        texts: ["Real", "Deportivo", "Atlético", "Rayo"],
-        color: "#c230b6",
-        title: "Iniciales Equipos de Fútbol'",
+        texts: ["Sumar", "Barbie", "Hello Kitty", "Cosmopolitan"],
+        color: "#f744ff",
+        title: "Logos rosas'",
         emoji: "🟪"
     },
     4: {
         groupId: 4,
         ids: ["13", "14", "15", "16"],
-        texts: ["Amor", "Roma", "Ramo", "Mora"],
+        texts: ["Limón", "Bob Esponja", "Patito de ducha", "Bumble"],
         color: "#ecde14",
-        title: "Mismas letras",
+        title: "Cosas amarillas",
         emoji: "🟨"
     }
 };
